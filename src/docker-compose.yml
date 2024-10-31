@@ -5,12 +5,11 @@ services:
     image: redis
   usuariodb:
     image: postgres
-  usuarios.api:
-    image: ${DOCKER_REGISTRY-}usuarios
+  usuario.api:
+    image: ${DOCKER_REGISTRY-}usuario
     build:
       context: .
       dockerfile: Services/Usuario/Usuario.API/Dockerfile
-
   pgadmin:
     image: dpage/pgadmin4
 volumes:
