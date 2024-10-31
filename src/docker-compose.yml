@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  distributedcache:
+    image: redis
+  usuariodb:
+    image: postgres
+  usuarios.api:
+    image: ${DOCKER_REGISTRY-}usuarios
+    build:
+      context: .
+      dockerfile: Services/Usuario/Usuario.API/Dockerfile
+
+  pgadmin:
+    image: dpage/pgadmin4
+volumes:
+  postgres_usuario:

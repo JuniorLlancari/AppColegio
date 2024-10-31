@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+
+  distributedcache:
+    container_name: distributedcache
+    restart: always
+    ports:
+      - "6379:6379"
+
+  usuarios.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=9070
+      - ConnectionStrings__Database=Server=usuariodb;Port=5432;Database=UsuarioDb;User Id=postgres_user;Password=postgres_pass;Include Error Detail=true
+    ports:
+      - "9070:9070"
+    depends_on:
+      - usuariodb
+
+  usuariodb:
+    container_name: usuariodb
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_pass
+      - POSTGRES_DB=UsuarioDb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_usuario:/var/lib/postgresql/data/
+
+  pgadmin:
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - usuariodb
