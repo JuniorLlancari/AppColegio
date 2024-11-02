@@ -29,12 +29,16 @@ public class CrearUsuarioCommandHandler : ICommandHandler<CrearUsuarioCommand, G
     {
 
         var rol = await _rolRepository.GetByNameAsync(request.Rol, cancellationToken);
+        if (rol == null)
+        {
+            return Result.Failure<Guid>(RolErrores.NoEncontrado);
+        }
 
         var usuario = UsuarioDomain.Usuario.Create(
         new ApellidoPaterno(request.ApellidoPaterno),
         new ApellidoMaterno(request.ApellidoMaterno),
         new NombresPersona(request.Nombres),
-            rol.Id,
+        rol.Id,
         Password.Create(request.Password),
         request.FechaNacimiento.ToUniversalTime(),
         CorreoElectronico.Create(request.CorreoElectronico).Value,
@@ -45,9 +49,12 @@ public class CrearUsuarioCommandHandler : ICommandHandler<CrearUsuarioCommand, G
             request.Distrito,
             request.Calle
         ),
-            _dateTimeProvider.CurrentTime.ToUniversalTime(),
+        _dateTimeProvider.CurrentTime.ToUniversalTime(),
         _nombreUsuarioService);
 
-        throw new NotImplementedException();
+        await _usuarioRepository.AgregarAsync(usuario);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return usuario.Id;
     }
 }

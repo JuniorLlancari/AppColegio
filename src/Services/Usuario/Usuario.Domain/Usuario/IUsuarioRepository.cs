@@ -1,15 +1,16 @@
+using System.Linq.Expressions;
 using Usuario.Domain.Usuario.ValueObjects;
 
 namespace Usuario.Domain.Usuario;
 
 public interface IUsuarioRepository
 {
-    Task<Usuario?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Usuario?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    void Add(Usuario usuario);
+    Task AgregarAsync(Usuario entidad);
 
-    void Delete(Usuario id);
-    Task<List<Usuario>> ListAsync(CancellationToken cancellationToken = default);
+    Task<ICollection<Usuario>> ListarAsync(
+        Expression<Func<Usuario, bool>> predicado, bool tracking = false, string? relaciones = null);
 
     Task<bool> ExisteCorreoAsync(
             CorreoElectronico correoElectronico,

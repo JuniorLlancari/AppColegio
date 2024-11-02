@@ -1,10 +1,11 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Usuario.Domain.Abstractions;
 
 namespace Usuario.Infraestructure.Repositories;
 
-internal abstract class Repository<T>
-where T : Entity
+internal abstract class Repository<TEntity>
+where TEntity : Entity
 {
     protected readonly ApplicationDbContext dbContext;
 
@@ -13,36 +14,120 @@ where T : Entity
         this.dbContext = dbContext;
     }
 
-    public async Task<T?> GetByIdAsync(
+    public async Task<TEntity?> ObtenerPorIdAsync(
         Guid id,
         CancellationToken cancellationToken
     )
     {
-        return await dbContext.Set<T>()
+        return await dbContext.Set<TEntity>()
         .FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
     }
 
-    public async Task<List<T>> ListAsync(
-        CancellationToken cancellationToken
-    )
+
+    public virtual async Task AgregarAsync(TEntity entity)
     {
-        return await dbContext.Set<T>().ToListAsync(cancellationToken);
+        await dbContext.AddAsync(entity);
     }
 
-    public void Add(T entity)
-    {
-        dbContext.Add(entity);
-    }
-
-    public void Update(T entity)
+    public void Actualizar(TEntity entity)
     {
         dbContext.Update(entity);
     }
 
-    public void Delete(T entity)
+    public void Eliminar(TEntity entity)
     {
         dbContext.Remove(entity);
     }
 
+
+    public virtual async Task<ICollection<TEntity>> ListarAsync(
+        Expression<Func<TEntity, bool>> predicado, bool tracking = false, string? relaciones = null)
+    {
+        var query = dbContext.Set<TEntity>()
+            .Where(predicado)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(relaciones))
+        {
+            query = relaciones.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, tabla) => current.Include(tabla));
+        }
+
+        query = tracking ? query.AsTracking() : query.AsNoTracking();
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<ICollection<TInfo>> ListarAsync<TInfo>(
+        Expression<Func<TEntity, bool>> predicado, Expression<Func<TEntity, TInfo>> selector)
+    {
+        return await dbContext.Set<TEntity>()
+            .Where(predicado)
+            .AsNoTracking()
+            .Select(selector)
+            .ToListAsync();
+    }
+
+    public virtual async Task<(ICollection<TInfo> Coleccion, int Total)> ListarAsync<TInfo, TKey>(
+        Expression<Func<TEntity, bool>> predicado, Expression<Func<TEntity, TInfo>> selector, Expression<Func<TEntity, TKey>> orderBy,
+        string relaciones, int pagina, int filas)
+    {
+        var query = dbContext.Set<TEntity>()
+            .Where(predicado)
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(relaciones))
+        {
+            query = relaciones.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, tabla) => current.Include(tabla));
+        }
+
+        query = query.OrderBy(orderBy)
+            .Skip((pagina - 1) * filas)
+            .Take(filas)
+            .AsQueryable();
+
+        var total = await dbContext.Set<TEntity>()
+            .Where(predicado)
+            .CountAsync();
+
+        return (await query
+            .Select(selector)
+            .ToListAsync(), total);
+    }
+
+    public async Task<(ICollection<TEntity> Coleccion, int Total)> ListarAsync<TKey>(Expression<Func<TEntity, bool>> predicado, Expression<Func<TEntity, TKey>> orderBy, string relaciones, int pagina, int filas)
+    {
+        var query = dbContext.Set<TEntity>()
+            .Where(predicado)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(relaciones))
+        {
+            query = relaciones.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, tabla) => current.Include(tabla));
+        }
+
+        query = query.OrderBy(orderBy)
+            .Skip((pagina - 1) * filas)
+            .Take(filas)
+            .AsQueryable();
+
+        var total = await dbContext.Set<TEntity>()
+            .Where(predicado)
+            .CountAsync();
+
+        return (await query
+            .ToListAsync(), total);
+    }
+
+
+    //packages: efcore.bulkextensions.sqlserver\7.1.6\
+    // public virtual async Task AgregarAsync(ICollection<TEntity> entidades)
+    // {
+    //     dbContext.Database.SetCommandTimeout(3600);
+    //     await dbContext.BulkInsertAsync(entidades);
+    // }
 
 }
