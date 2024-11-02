@@ -1,4 +1,4 @@
-namespace Usuario.Domain.Usuario;
+namespace Usuario.Domain.Usuario.ValueObjects;
 
 public record Password
 {
@@ -13,7 +13,7 @@ public record Password
 
     public static Password Create(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length < 8)
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
         {
             throw new ApplicationException("El password es invalido");
         }

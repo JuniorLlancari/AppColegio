@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Usuario.Domain.Abstractions;
 
-namespace Usuario.Domain.Usuario;
+namespace Usuario.Domain.Usuario.ValueObjects;
 
 public record CorreoElectronico
 {

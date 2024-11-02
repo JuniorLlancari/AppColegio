@@ -8,6 +8,11 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
 {
     public readonly IPublisher _publisher;
 
+    public ApplicationDbContext(DbContextOptions options) : base(options)
+    {
+
+    }
+
     public ApplicationDbContext(DbContextOptions options, IPublisher publisher) : base(options)
     {
         _publisher = publisher;
@@ -26,7 +31,18 @@ public sealed class ApplicationDbContext : DbContext, IUnitOfWork
             throw;
         }
     }
-
+    public async Task<int> SaveChangesAsync()
+    {
+        try
+        {
+            var result = await base.SaveChangesAsync();
+            return result;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

@@ -1,3 +1,5 @@
+using Usuario.Domain.Usuario.ValueObjects;
+
 namespace Usuario.Domain.Usuario;
 
 public interface IUsuarioRepository
@@ -7,6 +9,7 @@ public interface IUsuarioRepository
     void Add(Usuario usuario);
 
     void Delete(Usuario id);
+    Task<List<Usuario>> ListAsync(CancellationToken cancellationToken = default);
 
     Task<bool> ExisteCorreoAsync(
             CorreoElectronico correoElectronico,

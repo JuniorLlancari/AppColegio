@@ -1,5 +1,5 @@
 using Usuario.Domain.Abstractions;
-
+using Usuario.Domain.Rol.ValueObjects;
 namespace Usuario.Domain.Rol;
 
 public class Rol : Entity

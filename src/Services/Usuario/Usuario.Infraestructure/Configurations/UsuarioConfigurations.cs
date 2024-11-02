@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UsuarioDomain = Usuario.Domain.Usuario;
-
+using Usuario.Domain.Usuario.ValueObjects;
 namespace Usuario.Infraestructure.Configurations;
 
 public class UsuarioConfigurations : IEntityTypeConfiguration<UsuarioDomain.Usuario>
@@ -17,27 +17,27 @@ public class UsuarioConfigurations : IEntityTypeConfiguration<UsuarioDomain.Usua
 
         builder.Property(usuario => usuario.NombreUsuario)
             .HasMaxLength(30)
-            .HasConversion(nombre => nombre!.Value, value => new UsuarioDomain.NombreUsuario(value));
+            .HasConversion(nombre => nombre!.Value, value => new NombreUsuario(value));
 
         builder.Property(usuario => usuario.NombresPersona)
             .HasMaxLength(50)
-            .HasConversion(nombre => nombre!.Value, value => new UsuarioDomain.NombresPersona(value));
+            .HasConversion(nombre => nombre!.Value, value => new NombresPersona(value));
 
         builder.Property(usuario => usuario.ApellidoPaterno)
             .HasMaxLength(50)
-            .HasConversion(nombre => nombre!.Value, value => new UsuarioDomain.ApellidoPaterno(value));
+            .HasConversion(nombre => nombre!.Value, value => new ApellidoPaterno(value));
 
         builder.Property(usuario => usuario.ApellidoMaterno)
             .HasMaxLength(50)
-            .HasConversion(nombre => nombre!.Value, value => new UsuarioDomain.ApellidoMaterno(value));
+            .HasConversion(nombre => nombre!.Value, value => new ApellidoMaterno(value));
 
         builder.Property(usuario => usuario.CorreoElectronico)
             .HasMaxLength(150)
-            .HasConversion(nombre => nombre!.Value, value => UsuarioDomain.CorreoElectronico.Create(value).Value);
+            .HasConversion(nombre => nombre!.Value, value => CorreoElectronico.Create(value).Value);
 
         builder.Property(usuario => usuario.Password)
             .HasMaxLength(150)
-            .HasConversion(nombre => nombre!.Value, value => UsuarioDomain.Password.Create(value));
+            .HasConversion(nombre => nombre!.Value, value => Password.Create(value));
 
         builder.Property(usuario => usuario.FechaNacimiento);
 

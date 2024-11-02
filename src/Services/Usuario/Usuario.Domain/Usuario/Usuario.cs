@@ -1,5 +1,7 @@
 using Usuario.Domain.Abstractions;
 using Usuario.Domain.Usuario.Events;
+using Usuario.Domain.Usuario.ValueObjects;
+using RolDomain = Usuario.Domain.Rol;
 
 namespace Usuario.Domain.Usuario;
 
@@ -46,7 +48,7 @@ public class Usuario : Entity
     public UsuarioEstado Estado { get; private set; }
     public DateTime FechaUltimoCambio { get; private set; }
     public Guid? RolId { get; private set; }
-    public Rol? Rol { get; private set; }
+    public RolDomain.Rol? Rol { get; private set; }
 
 
     public static Usuario Create(

@@ -1,4 +1,4 @@
-namespace Usuario.Domain.Rol;
+namespace Usuario.Domain.Rol.ValueObjects;
 
 public record NombreRol
 {
