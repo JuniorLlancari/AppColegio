@@ -14,4 +14,11 @@ public class UsuarioErrores
         "Usuario.YaSeEncuentraInactivo",
         "El usuario ya se encuentra inactivo por tanto no se puede volver a inactivar"
     );
+
+
+    public static Error NoEncontrado = new(
+       "Usuario.NoEncontrado",
+       "No se encontro el Usuario"
+   );
+
 }

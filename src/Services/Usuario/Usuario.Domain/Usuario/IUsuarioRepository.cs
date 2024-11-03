@@ -6,6 +6,7 @@ namespace Usuario.Domain.Usuario;
 public interface IUsuarioRepository
 {
     Task<Usuario?> ObtenerPorIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Usuario?> ObtenerPorIdAsync(Guid id, string relaciones, CancellationToken cancellationToken = default);
 
     Task AgregarAsync(Usuario entidad);
 

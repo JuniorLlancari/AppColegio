@@ -24,6 +24,25 @@ where TEntity : Entity
     }
 
 
+    public async Task<TEntity?> ObtenerPorIdAsync(
+        Guid id, string relaciones, CancellationToken cancellationToken
+    )
+    {
+        var query = dbContext.Set<TEntity>()
+            .Where(p => p.Id == id)
+            .AsQueryable();
+
+        if (!string.IsNullOrEmpty(relaciones))
+        {
+            query = relaciones.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Aggregate(query, (current, tabla) => current.Include(tabla));
+        }
+
+
+        return await query.FirstOrDefaultAsync();
+    }
+
+
     public virtual async Task AgregarAsync(TEntity entity)
     {
         await dbContext.AddAsync(entity);
@@ -68,7 +87,7 @@ where TEntity : Entity
             .ToListAsync();
     }
 
-    public virtual async Task<(ICollection<TInfo> Coleccion, int Total)> ListarAsync<TInfo, TKey>(
+    public virtual async Task<(ICollection<TInfo> Coleccion, int Total)> ListarPaginadoAsync<TInfo, TKey>(
         Expression<Func<TEntity, bool>> predicado, Expression<Func<TEntity, TInfo>> selector, Expression<Func<TEntity, TKey>> orderBy,
         string relaciones, int pagina, int filas)
     {
@@ -97,7 +116,9 @@ where TEntity : Entity
             .ToListAsync(), total);
     }
 
-    public async Task<(ICollection<TEntity> Coleccion, int Total)> ListarAsync<TKey>(Expression<Func<TEntity, bool>> predicado, Expression<Func<TEntity, TKey>> orderBy, string relaciones, int pagina, int filas)
+    public async Task<(ICollection<TEntity> Coleccion, int Total)> ListarPaginadoAsync<TKey>(
+        Expression<Func<TEntity, bool>> predicado, Expression<Func<TEntity, TKey>> orderBy,
+        string relaciones, int pagina, int filas)
     {
         var query = dbContext.Set<TEntity>()
             .Where(predicado)

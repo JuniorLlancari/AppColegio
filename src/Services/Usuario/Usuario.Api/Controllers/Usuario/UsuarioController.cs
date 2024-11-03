@@ -51,4 +51,20 @@ public class UsuarioController : ControllerBase
         }
         return BadRequest(resultado.Error);
     }
+
+    [HttpGet("{UsuarioId}")]
+    public async Task<IActionResult> ObtenerUsuario(Guid UsuarioId, CancellationToken cancellationToken)
+    {
+
+        var query = new ObtenerUsuarioQuery
+        (
+            UsuarioId
+        );
+
+
+        var resultado = await _sender.Send(query, cancellationToken);
+
+        return resultado.IsSuccess ? Ok(resultado) : NotFound(resultado);
+
+    }
 }

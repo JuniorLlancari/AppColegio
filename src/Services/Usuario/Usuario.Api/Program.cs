@@ -1,5 +1,6 @@
 
 using Microsoft.OpenApi.Models;
+using Usuario.Api.Extensions;
 using Usuario.Application;
 using Usuario.Infraestructure;
 using Usuario.Infraestructure.Extensions;
@@ -46,7 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 
 
-// app.UseCustomExceptionHandler();
+app.UseCustomExceptionHandler();
 
 app.MapControllers();
 

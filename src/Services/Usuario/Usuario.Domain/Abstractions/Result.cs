@@ -51,10 +51,16 @@ public class Result<Tvalue> : Result
         _value = value;
     }
 
-    [NotNull]
-    public Tvalue Value => IsSuccess
-    ? _value!
-     : throw new InvalidOperationException("El resultado del valor del error no es esperado");
+    // [NotNull]
+    // public Tvalue Value => IsSuccess
+    // ? _value!
+    //  : throw new InvalidOperationException("El resultado del valor del error no es esperado");
+
+
+
+    public Tvalue Value => _value;
+
+
 
     public static implicit operator Result<Tvalue>(Tvalue value) => Create(value);
 
